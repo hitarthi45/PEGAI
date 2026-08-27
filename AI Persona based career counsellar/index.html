@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A personalized Gemini-powered AI career counselling workspace.">
+  <title>AI Career Compass</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+    :root {
+      --ink: #211b35;
+      --muted: #756b8e;
+      --violet: #6d42d8;
+      --violet-dark: #4d2aaf;
+      --lavender: #eee9ff;
+      --line: rgba(82, 54, 139, 0.14);
+      --paper: rgba(255, 255, 255, 0.82);
+      --shadow: 0 24px 80px rgba(75, 47, 142, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: #f8f6ff;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 9% 8%, rgba(224, 213, 255, 0.95) 0, rgba(224, 213, 255, 0) 31%),
+        radial-gradient(circle at 91% 26%, rgba(255, 221, 230, 0.72) 0, rgba(255, 221, 230, 0) 28%),
+        linear-gradient(135deg, #fbfaff 0%, #f1edff 52%, #fff7f5 100%);
+    }
+
+    .shell { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+    header { padding: 30px 0 26px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; gap: 12px; align-items: center; font-weight: 700; letter-spacing: -0.02em; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; color: white; background: var(--violet); box-shadow: 0 10px 20px rgba(109, 66, 216, .26); }
+    .status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: .82rem; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #54b782; box-shadow: 0 0 0 4px rgba(84, 183, 130, .12); }
+
+    main { padding: 26px 0 70px; }
+    .intro { max-width: 720px; margin-bottom: 34px; animation: rise .65s ease both; }
+    .eyebrow { margin: 0 0 12px; color: var(--violet); font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+    h1 { margin: 0; max-width: 680px; font-size: clamp(2.4rem, 6vw, 4.7rem); line-height: .99; letter-spacing: -.065em; }
+    .intro p { max-width: 570px; margin: 20px 0 0; color: var(--muted); font-size: 1.06rem; }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.03fr) minmax(320px, .97fr); gap: 24px; align-items: start; }
+    .panel { border: 1px solid rgba(255,255,255,.9); border-radius: 22px; background: var(--paper); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+    .composer { padding: 26px; animation: rise .65s .08s ease both; }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    h2 { margin: 0; font-size: 1.28rem; letter-spacing: -.035em; }
+    .step { color: var(--muted); font-size: .78rem; font-weight: 700; }
+    label { display: block; margin-bottom: 9px; font-size: .88rem; font-weight: 700; }
+    textarea { width: 100%; min-height: 168px; resize: vertical; border: 1px solid var(--line); border-radius: 14px; padding: 15px; color: var(--ink); background: rgba(255,255,255,.72); font: inherit; font-size: .95rem; outline: none; transition: border-color .2s, box-shadow .2s; }
+    textarea:focus { border-color: var(--violet); box-shadow: 0 0 0 4px rgba(109,66,216,.12); }
+    .api-key-field { margin-top: 18px; }
+    .api-key-input { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; color: var(--ink); background: rgba(255,255,255,.72); font: inherit; font-size: .88rem; outline: none; transition: border-color .2s, box-shadow .2s; }
+    .api-key-input:focus { border-color: var(--violet); box-shadow: 0 0 0 4px rgba(109,66,216,.12); }
+    .helper { margin: 8px 0 24px; color: var(--muted); font-size: .78rem; }
+    .persona-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .persona-option { position: relative; display: flex; align-items: center; gap: 11px; min-height: 59px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.45); cursor: pointer; transition: transform .2s, border-color .2s, background .2s; }
+    .persona-option:hover { transform: translateY(-2px); border-color: rgba(109,66,216,.45); background: #fff; }
+    .persona-option input { width: 18px; height: 18px; accent-color: var(--violet); }
+    .persona-option strong { display: block; font-size: .82rem; }
+    .persona-option small { display: block; margin-top: 2px; color: var(--muted); font-size: .7rem; }
+    button { width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 12px; padding: 14px 18px; color: #fff; background: var(--violet); font: 700 .9rem 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 12px 24px rgba(109,66,216,.22); transition: transform .2s, background .2s, box-shadow .2s; }
+    button:hover { transform: translateY(-2px); background: var(--violet-dark); box-shadow: 0 16px 28px rgba(109,66,216,.3); }
+    button:disabled { cursor: wait; opacity: .7; transform: none; }
+
+    .responses { min-height: 430px; padding: 26px; animation: rise .65s .16s ease both; }
+    .response-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    #responseStatus { color: var(--muted); font-size: .75rem; }
+    .empty-state { display: grid; place-items: center; min-height: 335px; padding: 30px; border: 1px dashed rgba(109,66,216,.27); border-radius: 16px; text-align: center; color: var(--muted); background: rgba(238,233,255,.36); }
+    .empty-icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 15px; border-radius: 17px; color: var(--violet); background: #e8e0ff; font-size: 1.4rem; }
+    .empty-state p { max-width: 270px; margin: 0; font-size: .9rem; }
+    .answer-card { margin-bottom: 12px; padding: 17px; border: 1px solid var(--line); border-left: 4px solid var(--violet); border-radius: 14px; background: rgba(255,255,255,.7); animation: reveal .4s ease both; }
+    .answer-card h3 { margin: 0 0 9px; font-size: 1rem; color: var(--violet-dark); }
+    .answer-card p { margin: 0; white-space: pre-wrap; color: #4d455f; font-size: .88rem; }
+    .error-message { padding: 14px; border-radius: 12px; color: #8d3544; background: #fff0f2; font-size: .86rem; }
+    footer { padding: 0 0 30px; color: var(--muted); font-size: .76rem; text-align: center; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 780px) { .shell { width: min(100% - 28px, 600px); } header { padding-top: 20px; } .status { display: none; } .workspace { grid-template-columns: 1fr; } h1 { font-size: 3rem; } }
+    @media (max-width: 430px) { .composer, .responses { padding: 19px; } .persona-grid { grid-template-columns: 1fr; } h1 { font-size: 2.55rem; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark">✦</span><span>AI Career Compass</span></div>
+      <div class="status"><span class="status-dot"></span> Gemini career workspace</div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">A clearer next chapter</p>
+        <h1>Your career, with a little more clarity.</h1>
+        <p>Ask one thoughtful question and bring the right advisors into the room. Their perspectives arrive together, shaped around your goals.</p>
+      </section>
+
+      <section class="workspace">
+        <div class="panel composer">
+          <div class="panel-heading"><h2>What’s on your mind?</h2><span class="step">01 / ASK</span></div>
+          <form id="adviceForm">
+            <label for="question">Your career question</label>
+            <textarea id="question" placeholder="e.g. How should I prepare for an AI-focused MS while building a stronger project portfolio?"></textarea>
+            <p class="helper">The more context you share, the more personal the guidance becomes.</p>
+            <div class="api-key-field">
+              <label for="apiKey">Gemini API key</label>
+              <input class="api-key-input" id="apiKey" type="password" placeholder="Paste your Gemini API key" autocomplete="off">
+              <p class="helper">Used only in your browser for this request. It is not saved.</p>
+            </div>
+            <label>Choose your advisors</label>
+            <div class="persona-grid">
+              <label class="persona-option"><input type="checkbox" name="persona" value="technical"><span><strong>Technical Advisor</strong><small>Coding, AI & projects</small></span></label>
+              <label class="persona-option"><input type="checkbox" name="persona" value="hr"><span><strong>HR Advisor</strong><small>Resume & interviews</small></span></label>
+              <label class="persona-option"><input type="checkbox" name="persona" value="academic"><span><strong>Academic Advisor</strong><small>MS & research</small></span></label>
+              <label class="persona-option"><input type="checkbox" name="persona" value="startup"><span><strong>Startup Advisor</strong><small>Business ideas</small></span></label>
+            </div>
+            <button id="adviceButton" type="submit"><span>Get Advice</span><span aria-hidden="true">✧</span></button>
+          </form>
+        </div>
+
+        <div class="panel responses">
+          <div class="response-heading"><h2>Your career guidance</h2><span id="responseStatus">Waiting for your question</span></div>
+          <div id="responseArea" class="empty-state"><div><div class="empty-icon">♡</div><p>Your selected perspectives will appear here as individual guidance cards.</p></div></div>
+        </div>
+      </section>
+    </main>
+    <footer>Thoughtful guidance for your next bold move.</footer>
+  </div>
+
+  <script>
+    const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
+
+    const personaCards = {
+      technical: { title: 'Technical Advisor', role: 'Expert software engineer and AI mentor', audience: 'The person asking this question, an ambitious learner building a career in technology', context: 'Focus on coding, AI, technical projects, skills, tools, and portfolio depth.', format: 'Give a diagnosis, then 3-5 practical next steps with suggested projects or resources.', constraints: 'Be specific and realistic. Avoid generic advice and account for the experience level implied by the question.', language: 'Warm, clear, encouraging English.' },
+      hr: { title: 'HR Advisor', role: 'Strategic recruiter and career coach', audience: 'The person asking this question, preparing to present their strengths confidently', context: 'Focus on resumes, portfolios, networking, personal branding, and interviews.', format: 'Give actionable feedback, example wording where useful, and a short priority checklist.', constraints: 'Use hiring-manager perspective without inventing experience or making promises about outcomes.', language: 'Warm, direct, professional English.' },
+      academic: { title: 'Academic Advisor', role: 'Graduate admissions and research mentor', audience: 'The person asking this question, exploring an MS and meaningful research direction', context: 'Focus on MS preparation, university fit, research skills, professors, applications, and funding.', format: 'Explain the reasoning, identify preparation gaps, and provide a sequenced academic roadmap.', constraints: 'Be nuanced about uncertainty. Do not claim current university requirements without verification.', language: 'Thoughtful, structured, accessible English.' },
+      startup: { title: 'Startup Advisor', role: 'Practical founder and product strategist', audience: 'The person asking this question, exploring viable business ideas with room to learn and grow', context: 'Focus on problem selection, customer discovery, MVPs, validation, business models, and execution.', format: 'Recommend a focused direction, validation experiments, and measurable next steps.', constraints: 'Prioritize evidence and small experiments over hype. Flag assumptions clearly.', language: 'Energetic, grounded, concise English.' }
+    };
+
+    function buildPrompt(question, selectedPersonas) {
+      const cards = selectedPersonas.map((key, index) => {
+        const persona = personaCards[key];
+        return `PROMPT CARD ${index + 1}: ${persona.title}\nRole: ${persona.role}\nAudience: ${persona.audience}\nContext: ${persona.context}\nFormat: ${persona.format}\nConstraints: ${persona.constraints}\nLanguage: ${persona.language}`;
+      }).join('\n\n');
+      const headings = selectedPersonas.map(key => personaCards[key].title).join(', ');
+      return `You are coordinating a panel of career advisors for the person asking the question. Answer the question below using every selected prompt card. Return exactly one clearly labeled section for each selected advisor, using these headings: ${headings}. Keep the perspectives distinct, avoid repeating the same advice, and end each section with concrete actions.\n\nQUESTION FROM THE USER:\n${question}\n\nSELECTED PROMPT CARDS:\n${cards}`;
+    }
+
+    async function findGeminiModel(apiKey) {
+      const response = await fetch(`${API_BASE_URL}/models?key=${encodeURIComponent(apiKey)}`);
+      if (!response.ok) { let detail = ''; try { detail = (await response.json()).error?.message || ''; } catch (_) {} throw new Error(detail || `Could not list Gemini models (${response.status})`); }
+      const data = await response.json();
+      const available = (data.models || []).filter(model => model.supportedGenerationMethods?.includes('generateContent'));
+      const preferred = ['models/gemini-3.6-flash', 'models/gemini-2.0-flash', 'models/gemini-1.5-flash'];
+      const model = preferred.find(name => available.some(item => item.name === name)) || available[0]?.name;
+      if (!model) throw new Error('This API key has no Gemini model that supports generateContent. Create a Gemini API key in Google AI Studio.');
+      return model;
+    }
+
+    async function callGemini(prompt, apiKey) {
+      const model = await findGeminiModel(apiKey);
+      const response = await fetch(`${API_BASE_URL}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+      if (!response.ok) { let detail = ''; try { detail = (await response.json()).error?.message || ''; } catch (_) {} throw new Error(detail || `Gemini request failed (${response.status})`); }
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
+      if (!text) throw new Error('Gemini returned an empty response. Please try again.');
+      return text;
+    }
+
+    function displayResponse(text, selectedPersonas) {
+      const area = document.getElementById('responseArea');
+      area.className = '';
+      area.innerHTML = '';
+      selectedPersonas.forEach((key, index) => {
+        const title = personaCards[key].title;
+        const card = document.createElement('article');
+        card.className = 'answer-card';
+        card.style.animationDelay = `${index * 80}ms`;
+        const heading = document.createElement('h3');
+        heading.textContent = title;
+        const content = document.createElement('p');
+        const sectionPattern = new RegExp(`(?:^|\\n)\\s*${title.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}\\s*:?\\s*\\n?([\\s\\S]*?)(?=\\n\\s*(?:${selectedPersonas.map(item => personaCards[item].title.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')).join('|')})\\s*:?[\\n]|$)`, 'i');
+        const match = text.match(sectionPattern);
+        content.textContent = match ? match[1].trim() : text;
+        card.append(heading, content);
+        area.appendChild(card);
+      });
+    }
+
+    async function getAdvice() {
+      const question = document.getElementById('question').value.trim();
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const selectedPersonas = [...document.querySelectorAll('input[name="persona"]:checked')].map(input => input.value);
+      if (!question) { alert('Please enter a career question first.'); return; }
+      if (!selectedPersonas.length) { alert('Please select at least one advisor.'); return; }
+      if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY') { alert('Please enter a valid Gemini API key.'); return; }
+      const button = document.getElementById('adviceButton');
+      const status = document.getElementById('responseStatus');
+      button.disabled = true;
+      button.querySelector('span').textContent = 'Thinking...';
+      status.textContent = 'Consulting your panel';
+      document.getElementById('responseArea').className = 'empty-state';
+      document.getElementById('responseArea').innerHTML = '<div><div class="empty-icon">…</div><p>Your advisors are shaping their perspectives.</p></div>';
+      try {
+        const prompt = buildPrompt(question, selectedPersonas);
+        const response = await callGemini(prompt, apiKey);
+        displayResponse(response, selectedPersonas);
+        status.textContent = `${selectedPersonas.length} perspective${selectedPersonas.length === 1 ? '' : 's'} ready`;
+      } catch (error) {
+        const area = document.getElementById('responseArea');
+        area.className = '';
+        area.innerHTML = `<div class="error-message"><strong>We couldn’t reach your advisors.</strong><br>${error.message} Check your API key and connection, then try again.</div>`;
+        status.textContent = 'Request unsuccessful';
+      } finally {
+        button.disabled = false;
+        button.querySelector('span').textContent = 'Get Advice';
+      }
+    }
+
+    document.getElementById('adviceForm').addEventListener('submit', event => { event.preventDefault(); getAdvice(); });
+  </script>
+</body>
+</html>
